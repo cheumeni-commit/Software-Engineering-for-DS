@@ -18,13 +18,19 @@ def get_data_catalog():
 
     logger.info("Loading data catalog...")
 
-    products = pd.read_csv(config.raw_data_dir / PRODUCTS)
-    transactions = pd.read_csv(
-        config.raw_data_dir / TRANSACTIONS,
-        parse_dates=[DATE]
-    )
+    if config.raw_data_dir.is_dir:
 
-    logger.info("Data catalog loaded. ✅")
+        products = pd.read_csv(config.raw_data_dir / PRODUCTS)
+
+        transactions = pd.read_csv(
+        	config.raw_data_dir / TRANSACTIONS,
+        	parse_dates=[DATE]
+    	)
+
+        logger.info("Data catalog loaded. ✅")
+
+    else:
+ 	    logger.warning("Data file are unload, please check")
 
     return {
         'products': products,
@@ -33,6 +39,8 @@ def get_data_catalog():
 
 
 def save_dataset(dataset, *, path):
+
     dataset.to_csv(path, index=False)
     logger.info(f"Dataset saved at {path.relative_to(config.root_dir)}")
+
 

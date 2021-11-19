@@ -1,17 +1,17 @@
 # src/__main__.py
 import logging
 
-from src.config import config
-from src.io import get_data_catalog
 import pandas as pd
 
+from src.config import config
+from src.io import get_data_catalog
+from src.run_dataset import main
 
 logger = logging.getLogger(__name__)
 
 if __name__ == '__main__':
+	logger.debug("I'm testing the logging configuration.")
+    
 
-	#logger.debug("I'm testing the logging configuration.")
-    #print(config.root_dir)  # just a sanity check 
-    data = get_data_catalog()
-    data = pd.DataFrame(data['transactions'])
+
     
