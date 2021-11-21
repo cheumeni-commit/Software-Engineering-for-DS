@@ -9,7 +9,7 @@ from src.constants import (
     PRODUCT_ID,
     GROSS_PRICE,
     NB_SOLD_PIECES,
-	PERIOD_W
+	PERIOD
 )
 
 
@@ -23,7 +23,7 @@ def _get_daily_transactions(transactions):
 
 def _get_weekly_transactions(daily_transactions):
 	"Aggregate on weekly over daily transactions"
-	return (daily_transactions.set_index(DATE).to_period(freq='W').reset_index().rename(columns={DATE: PERIOD_W})).groupby([PRODUCT_ID, PERIOD], as_index=False)[config.target].agg('sum')
+	return (daily_transactions.set_index(DATE).to_period(freq='W').reset_index().rename(columns={DATE: PERIOD})).groupby([PRODUCT_ID, PERIOD], as_index=False)[config.target].agg('sum')
 
 
 def _merge_transactions_with_products(weekly_transactions, products):
@@ -33,7 +33,8 @@ def _merge_transactions_with_products(weekly_transactions, products):
 
 def build_dataset():
 	"Build dataset with daily and weekly transactions"
-	catalog = get_data_calalog()
+
+	catalog = get_data_catalog()
 	
 	daily_tx = _get_daily_transactions(catalog['transactions'])
 	weekly_tx = _get_weekly_transactions(daily_tx)

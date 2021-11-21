@@ -43,4 +43,5 @@ def save_dataset(dataset, *, path):
     dataset.to_csv(path, index=False)
     logger.info(f"Dataset saved at {path.relative_to(config.root_dir)}")
 
-
+def load_dataset(path):
+    return pd.read_csv(path, parse_dates=True)

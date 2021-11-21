@@ -1,6 +1,7 @@
 # filename
 PRODUCTS = 'products.csv'
 TRANSACTIONS = 'transactions.csv'
+DATASET = 'dataset.csv'
 
 # file "transactions.csv" column
 DATE = 'date'
@@ -19,7 +20,8 @@ COLOR = 'color'
 SUPPLIER = 'supplier'
 
 # Windows
-PERIOD_W = 'Week'
+PERIOD   = 'period'
+PERIOD_W = 'week'
 PERIOD_Y = 'year'
 PERIOD_Q = 'quarter'
 NB_WEEK  =  6

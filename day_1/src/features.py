@@ -2,7 +2,7 @@
 import numpy as np 
 import pandas as pd
 
-from src.contants import (
+from src.constants import (
     DATE,
     PRODUCT_ID,
     GROSS_PRICE,
@@ -17,7 +17,7 @@ from src.contants import (
 def build_feature_set(data):
     'Build feature engineering'
 
-    data[DATE] = pd.to_datetime(data[PERIOD_W].astype(str) + data[PERIOD_Y].astype(str).add('-1'),format = "%W%Y-%w")
+    data[DATE] = pd.to_datetime(data[PERIOD_W].astype(str) + data[PERIOD_Y].astype(str).add('-1'), format = "%W%Y-%w")
     data[PERIOD_Q] = data[DATE].dt.quarter
     # create column of lag_target
     data_with_lag_column = _lag_traget(data)
