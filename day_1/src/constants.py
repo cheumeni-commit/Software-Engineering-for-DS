@@ -19,3 +19,7 @@ COLOR = 'color'
 SUPPLIER = 'supplier'
 
 # Windows
+PERIOD_W = 'Week'
+PERIOD_Y = 'year'
+PERIOD_Q = 'quarter'
+NB_WEEK  =  6
