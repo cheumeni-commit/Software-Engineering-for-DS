@@ -15,22 +15,22 @@ from src.constants import (
 )
 
 def build_feature_set(data):
-    'Build feature engineering'
 
-    #data[PERIOD_Q] = data[DATE].dt.quarter
+
     # create column of lag_target
     data_with_lag_column = _lag_traget(data)
 
     # create column of rolling mean
     data_with_rollingmean_column = _rolling_mean(data_with_lag_column)
 
-    # create column of feature sin, cos and supplier
-    data_with_sincos_transformation = _another_transformation(data_with_rollingmean_column)
+    # create column of feature sin, cos
+    data_with_sincos_transformation = _sin_cos_transformation(data_with_rollingmean_column)
 
     return data_with_sincos_transformation
 
 def _lag_traget(data):
-    'lag target'
+
+    """ Add rolling mean column """
 
     data[f'lag_target_1W'] = data.groupby('product_id')['nb_sold_pieces'] \
     .transform(lambda x:x.shift(1))
@@ -51,7 +51,8 @@ def _lag_traget(data):
     return data
 
 def _rolling_mean(data):
-    'Build a rolling mean'
+
+    """ Add rolling mean column """
 
     data[f'rolling_mean_3W'] = np.mean(data[['lag_target_1W', 'lag_target_2W', 'lag_target_3W']], axis=1)
     data[f'rolling_mean_4W'] = np.mean(data[['lag_target_1W', 'lag_target_2W', 'lag_target_3W', 'lag_target_4W']],
@@ -60,8 +61,9 @@ def _rolling_mean(data):
 
     return data
 
-def _another_transformation(data):
-    'add many transformation'
+def _sin_cos_transformation(data):
+
+    """ Add rolling mean column """
     
     data['sin_week'] = np.sin((data[PERIOD_W]-1) * np.pi *2 / (52+71 / 400))
     data['cos_week'] = np.cos((data[PERIOD_W]-1) * 2*np.pi /(52+(71 / 400)))

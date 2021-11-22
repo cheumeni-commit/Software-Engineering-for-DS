@@ -46,15 +46,24 @@ def _merge_transactions_with_products(agg_transactions, products):
 	
 
 def build_dataset():
+
 	"Build dataset with daily and weekly transactions"
 
 	catalog = get_data_catalog()
-	
+	# daily transaction
 	daily_tx = _get_daily_transactions(catalog['transactions'])
+	# weekly transaction
 	weekly_tx = _get_weekly_transactions(daily_tx)
+	# year transaction
 	year_tx = _get_year_transactions(weekly_tx)
+	# aggregation transactions
 	agg_transaction = _get_transactions(year_tx)
-	dataset = _merge_transactions_with_products(agg_transaction, catalog['products'])
-	dataset[DATE] = pd.to_datetime(dataset[PERIOD_W].astype(str)+dataset[PERIOD_Y].astype(str).add('-1'),format = "%W%Y-%w")
+	# merge aggregation transaction with product
+	dataset_merge = _merge_transactions_with_products(agg_transaction, catalog['products'])
+    # Update column DATE 
+	dataset_merge[DATE] = pd.to_datetime(dataset_merge[PERIOD_W].astype(str)+
+	                dataset_merge[PERIOD_Y].astype(str).add('-1'),format = "%W%Y-%w")
+	# drop supplier
+	dataset = dataset_merge.drop('supplier', axis=1)
 
-	return dataset.drop('supplier', axis=1)
+	return dataset

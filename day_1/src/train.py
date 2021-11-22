@@ -30,7 +30,7 @@ def train(model, dataset):
         for features in ((X_train, y_train), (X_test, y_test))
     )
 
-    metrics_msg = "=" * 10 + " Metrics " + "=" * 10
+    metrics_msg = "=" * 20 + " Metrics " + "=" * 20
     logger.info(metrics_msg)
     logger.info(f"Train: {train_metrics}")
     logger.info(f"Test: {test_metrics}")
@@ -56,6 +56,6 @@ def _split_target(features_set):
     return X_train, y_train, X_test, y_test
 
 
-def _train_model(model, *, X, y):
+def _train_model(model, X, y):
     model.fit(X, y)
     return model

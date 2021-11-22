@@ -15,6 +15,6 @@ def get_model(config):
     try:
         Model = _MODELS_REGISTRY_[config.model['name']]
     except:
-        logger.info("The {} model is not available ".format(_MODELS_REGISTRY_[config.model['name']]))
+        logger.info("The model is not available ")
 
     return Model(**config.model['params'])

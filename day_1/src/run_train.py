@@ -14,7 +14,7 @@ from src.train import train
 logger = logging.getLogger(__name__)
 
 
-def main():
+def main_train():
     start = time.time()
     logger.info("Starting training job...")
     model = get_model(config)
@@ -27,4 +27,4 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    main_train()
