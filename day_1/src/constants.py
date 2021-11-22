@@ -25,3 +25,6 @@ PERIOD_W = 'week'
 PERIOD_Y = 'year'
 PERIOD_Q = 'quarter'
 NB_WEEK  =  6
+
+# test_size
+SIZE = 0.20

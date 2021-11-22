@@ -17,8 +17,7 @@ from src.constants import (
 def build_feature_set(data):
     'Build feature engineering'
 
-    data[DATE] = pd.to_datetime(data[PERIOD_W].astype(str) + data[PERIOD_Y].astype(str).add('-1'), format = "%W%Y-%w")
-    data[PERIOD_Q] = data[DATE].dt.quarter
+    #data[PERIOD_Q] = data[DATE].dt.quarter
     # create column of lag_target
     data_with_lag_column = _lag_traget(data)
 
@@ -33,9 +32,21 @@ def build_feature_set(data):
 def _lag_traget(data):
     'lag target'
 
-    for lag in range(1, NB_WEEK):
-        data[f'lag_target_{lag}W'] = data.groupby(PRODUCT_ID)[NB_SOLD_PIECES].shift(lag)
-        data[f'lag_target_{lag}W'] = data[f'lag_target_{lag}W'].fillna(method='bfill')
+    data[f'lag_target_1W'] = data.groupby('product_id')['nb_sold_pieces'] \
+    .transform(lambda x:x.shift(1))
+    data[f'lag_target_1W'] = data[f'lag_target_1W'].fillna(method='bfill')
+    data[f'lag_target_2W'] = data.groupby('product_id')['nb_sold_pieces'] \
+        .transform(lambda x:x.shift(2)).fillna(method='bfill')
+    lag=3
+    data[f'lag_target_{lag}W'] = data.groupby('product_id')['nb_sold_pieces'].shift(lag)
+    data[f'lag_target_{lag}W'] = data[f'lag_target_{lag}W'].fillna(method='bfill')
+    lag=4
+    data[f'lag_target_{lag}W'] = data.groupby('product_id')['nb_sold_pieces'].shift(lag)
+    data[f'lag_target_{lag}W'] = data[f'lag_target_{lag}W'].fillna(method='bfill')
+    lag=5
+    data[f'lag_target_{lag}W'] = (data.groupby('product_id')['nb_sold_pieces']
+        .transform(lambda x: x.shift(lag)).fillna(method='bfill'))
+    data[f'lag_target_{lag}W'] = data[f'lag_target_{lag}W'].fillna(method='bfill')
     
     return data
 
@@ -51,10 +62,8 @@ def _rolling_mean(data):
 
 def _another_transformation(data):
     'add many transformation'
-
+    
     data['sin_week'] = np.sin((data[PERIOD_W]-1) * np.pi *2 / (52+71 / 400))
     data['cos_week'] = np.cos((data[PERIOD_W]-1) * 2*np.pi /(52+(71 / 400)))
-    data['supplier'] = data['supplier'].fillna('UNKNOWN')
-    data['supplier'] = data['supplier'].astype('category').cat.codes
 
     return data

@@ -1,6 +1,6 @@
 # src/config.py
 from pathlib import Path
-from src.constants import NB_SOLD_PIECES, PERIOD
+from src.constants import NB_SOLD_PIECES, PERIOD_W
 
 class _Config:
 
@@ -11,8 +11,8 @@ class _Config:
         self.raw_data_dir = self.data_dir / 'raw'
         self.target = NB_SOLD_PIECES
 
-        self.date_col = PERIOD
-        self.test_cutoff = '06-02-2018'
+        self.date_col = PERIOD_W
+        self.test_cutoff = '2018-02-06'
 
         self.model = {
             'name': 'RandomForest',

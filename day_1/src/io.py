@@ -39,7 +39,6 @@ def get_data_catalog():
 
 
 def save_dataset(dataset, *, path):
-
     dataset.to_csv(path, index=False)
     logger.info(f"Dataset saved at {path.relative_to(config.root_dir)}")
 

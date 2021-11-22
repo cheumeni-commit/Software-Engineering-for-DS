@@ -9,7 +9,10 @@ from src.constants import (
     PRODUCT_ID,
     GROSS_PRICE,
     NB_SOLD_PIECES,
-	PERIOD
+	PERIOD_W,
+	PRODUCT_NAME,
+	COLOR,
+	PERIOD_Y
 )
 
 
@@ -18,17 +21,28 @@ logger = logging.getLogger(__name__)
 
 def _get_daily_transactions(transactions):
 	"Aggregate daily transactions"
-	return (transactions.groupby([DATE, PRODUCT_ID])[NB_SOLD_PIECES].agg('sum').reset_index())
+	return (transactions.groupby([PRODUCT_ID, DATE])[NB_SOLD_PIECES].agg('sum').reset_index())
 
 
 def _get_weekly_transactions(daily_transactions):
 	"Aggregate on weekly over daily transactions"
-	return (daily_transactions.set_index(DATE).to_period(freq='W').reset_index().rename(columns={DATE: PERIOD})).groupby([PRODUCT_ID, PERIOD], as_index=False)[config.target].agg('sum')
+	daily_transactions[PERIOD_W] = pd.to_datetime(daily_transactions[DATE]).dt.week
+	return daily_transactions
 
+def _get_year_transactions(week_transactions):
+	"Aggregate on weekly over year transactions"
+	week_transactions[PERIOD_Y] = pd.to_datetime(week_transactions[DATE]).dt.year
+	return week_transactions
 
-def _merge_transactions_with_products(weekly_transactions, products):
+def _get_transactions(year_transactions):
+	"Aggregate on weekly over transactions"
+	year_transactions=year_transactions.groupby(
+    [PRODUCT_ID, PERIOD_W, PERIOD_Y])[NB_SOLD_PIECES].agg('sum').reset_index()
+	return year_transactions
+
+def _merge_transactions_with_products(agg_transactions, products):
 	"Merge transaction with product on product_id"
-	return pd.merge(products, weekly_transactions, on='product_id')
+	return agg_transactions.merge(products, on= PRODUCT_ID).drop([PRODUCT_NAME, COLOR], axis=1)
 	
 
 def build_dataset():
@@ -38,6 +52,9 @@ def build_dataset():
 	
 	daily_tx = _get_daily_transactions(catalog['transactions'])
 	weekly_tx = _get_weekly_transactions(daily_tx)
-	dataset = _merge_transactions_with_products(weekly_tx, catalog['products'])
+	year_tx = _get_year_transactions(weekly_tx)
+	agg_transaction = _get_transactions(year_tx)
+	dataset = _merge_transactions_with_products(agg_transaction, catalog['products'])
+	dataset[DATE] = pd.to_datetime(dataset[PERIOD_W].astype(str)+dataset[PERIOD_Y].astype(str).add('-1'),format = "%W%Y-%w")
 
-	return dataset
+	return dataset.drop('supplier', axis=1)

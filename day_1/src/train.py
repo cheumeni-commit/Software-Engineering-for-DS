@@ -6,30 +6,20 @@ logger = logging.getLogger(__name__)
 
 from src.config import config
 from src.features import build_feature_set
-from src.evaluation import train_test_split, evaluate_model
+from src.evaluation import evaluate_model
+from sklearn.model_selection import train_test_split
+from src.constants import SIZE
 
 
 def train(model, dataset):
-    train_data, test_data = train_test_split(
-        dataset,
-        date_col=config.date_col,
-        cutoff=config.test_cutoff
-    )
-    logger.info(f"Train's shape: {train_data.shape}")
-    logger.info(f"Test's shape: {test_data.shape}")
 
-    # NOTE: This unpacking is not the most elegant.
-    #       We'll explore ways to handle those things later in the training
-    #
-    #       An alternative would be to not use comprehension and
-    #       simply call each function twice.
-    #       Although it might make the code harder to read,
-    #       I favored the shorter version because the function is already
-    #       quite long.
-    ((X_train, y_train), (X_test, y_test)) = (
-        _split_target(build_feature_set(data), target=config.target)
-        for data in (train_data, test_data)
-    )
+    # Add more feature for training
+    dataset_with_feature = build_feature_set(dataset)
+    # Split the data set
+    X_train, y_train, X_test, y_test = _split_target(dataset_with_feature)
+
+    logger.info(f"Train's shape: {X_train.shape}")
+    logger.info(f"Test's shape: {X_test.shape}")
 
     logger.info(f"Training model...")
     fitted_model = _train_model(model, X=X_train, y=y_train)
@@ -55,11 +45,15 @@ def train(model, dataset):
     }
 
 
-def _split_target(features_set, *, target):
-    X = features_set.copy()
-    # NOTE: pop mutates X
-    y = X.pop(target)
-    return X, y
+def _split_target(features_set):
+
+    df_train, df_preds = train_test_split(features_set, test_size = SIZE)
+    y_train = df_train.pop('nb_sold_pieces')
+    X_train = df_train[[c for c in df_train.columns if c != 'period']].drop('date',axis=True, inplace=False)
+    y_test = df_preds.pop('nb_sold_pieces')
+    X_test = df_preds[[c for c in df_train.columns if c != 'period']].drop(['date'], axis=True)
+
+    return X_train, y_train, X_test, y_test
 
 
 def _train_model(model, *, X, y):

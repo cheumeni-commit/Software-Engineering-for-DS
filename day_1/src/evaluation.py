@@ -15,15 +15,6 @@ _METRICS = {
     'WAPE': WAPE
 }
 
-
-def train_test_split(dataset, *, date_col, cutoff):
-    train, test = (
-        dataset.loc[dataset[date_col] < cutoff],
-        dataset.loc[dataset[date_col] >= cutoff]
-    )
-    return train, test
-
-
 def evaluate_model(fitted_model, *, X, y):
     y_hat = fitted_model.predict(X)
     metrics = {name: func(y, y_hat) for name, func in _METRICS.items()}
