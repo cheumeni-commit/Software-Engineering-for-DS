@@ -1,6 +1,9 @@
 
 # src/libs/features/registry.py
-from src.exception import FeatureNotFoundError
+from dataclasses import dataclass
+from typing import Callable, List
+
+from src.exceptions import FeatureNotFoundError
 
 
 @dataclass
@@ -38,21 +41,23 @@ class FeatureRegistry:  # or FeatureStore... as you prefer!
         feature_data = self.registry[name]
         if feature_data is None:
             raise FeatureNotFoundError 
-        yield feature_data
+        return feature_data
     
-    def register(  # TODO 1. : define the method's signature):
+    def register(self, name, depends=None, resources=None):
 
-        def do_register(  # TODO 2. : define the closure's signature):
-        # TODO 3. : build a record to store in `self._registry`
+        depends = depends or []
+        resources = resources or []
 
-        # A record is an instance of the FeatureRecord dataclass.
-        #  - name: the name of the feature
-        #  - func: the callable function
-        #  - depends: the list of required dependencies
-        #  - resources: the list of required external resources
+        def do_register(func):
+            nonlocal name
+            if name is None:
+                name = func.__name__
+            record = FeatureRecord(
+                name=name,
+                func=func,
+                depends=list(depends),
+                resources=list(resources)
+            )
+            self._registry[name] = record
 
-        # TODO 4. : store the record in the instance state,
-        # ie, in `self._registry` (a dict)
-        # Records must be accessible by their names
-
-        return  # TODO 5. : what should the `register` method return?
+        return do_register

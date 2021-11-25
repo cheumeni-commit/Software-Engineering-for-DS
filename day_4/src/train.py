@@ -70,3 +70,4 @@ def _split_train_test(features_set):
 def _train_model(model, X, y):
     model.fit(X, y)
     return model
+

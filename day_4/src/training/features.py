@@ -2,6 +2,9 @@
 import numpy as np 
 import pandas as pd
 
+from src.libs.features.registry import FeatureRegistry
+
+
 from src.constants import (
     DATE,
     PRODUCT_ID,
@@ -15,6 +18,10 @@ from src.constants import (
     NB_WEEK
 
 )
+
+
+registry = FeatureRegistry()
+
 
 def build_feature_set(data):
 
@@ -69,19 +76,24 @@ def _cos_transformation(data):
     data['cos_week'] = np.cos((data[PERIOD_W]-1) * 2*np.pi /(52+(71 / 400)))
     return data
 
+
+@registry.register(name='product_id')
 def product_id(data):
     # TODO: return the corresponding pd.Series
     return data[PRODUCT_ID]
 
+@registry.register(name='period')
 def period(data):
     # TODO: return the corresponding pd.Series
     return data[PERIOD]
 
+@registry.register(name='week', depends=['period'])
 def week(_, period):  # dependency here!
     # TODO: return the corresponding pd.Series
     period[PERIOD_W] = pd.to_datetime(period).dt.week
     return period
 
+@registry.register(name='year', depends=['period'])
 def year(_, period):  # and another dependency
     # TODO: return the corresponding pd.Series
     period[PERIOD_W] = pd.to_datetime(period).dt.year
