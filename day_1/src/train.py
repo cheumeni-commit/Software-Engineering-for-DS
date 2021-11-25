@@ -8,7 +8,8 @@ from src.config import config
 from src.features import build_feature_set
 from src.evaluation import evaluate_model
 from sklearn.model_selection import train_test_split
-from src.constants import SIZE
+from src.constants import (SIZE, NB_SOLD_PIECES, PERIOD,
+                            DATE)
 
 
 def train(model, dataset):
@@ -46,14 +47,25 @@ def train(model, dataset):
 
 
 def _split_target(features_set):
+    
+    features_set.sort_values(by=DATE)
+    
+    df_train, df_preds = _split_train_test(features_set)
 
-    df_train, df_preds = train_test_split(features_set, test_size = SIZE)
-    y_train = df_train.pop('nb_sold_pieces')
-    X_train = df_train[[c for c in df_train.columns if c != 'period']].drop('date',axis=True, inplace=False)
-    y_test = df_preds.pop('nb_sold_pieces')
-    X_test = df_preds[[c for c in df_train.columns if c != 'period']].drop(['date'], axis=True)
+    y_train = df_train.pop(NB_SOLD_PIECES)
+    X_train = df_train[[c for c in df_train.columns if c != PERIOD]].drop(DATE,axis=True, inplace=False)
+
+    y_test = df_preds.pop(NB_SOLD_PIECES)
+    X_test = df_preds[[c for c in df_train.columns if c != PERIOD]].drop([DATE], axis=True)
 
     return X_train, y_train, X_test, y_test
+
+
+def _split_train_test(features_set):
+
+    df_train, df_test = train_test_split(features_set, test_size = SIZE)
+
+    return df_train, df_test
 
 
 def _train_model(model, X, y):

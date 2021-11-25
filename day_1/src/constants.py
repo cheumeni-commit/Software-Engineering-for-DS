@@ -28,3 +28,6 @@ NB_WEEK  =  6
 
 # test_size
 SIZE = 0.20
+
+# lag and rolling
+LAG = [1, 2, 3, 4, 5]

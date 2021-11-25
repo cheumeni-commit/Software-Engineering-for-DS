@@ -26,7 +26,7 @@ def _get_daily_transactions(transactions):
 
 def _get_weekly_transactions(daily_transactions):
 	"Aggregate on weekly over daily transactions"
-	daily_transactions[PERIOD_W] = pd.to_datetime(daily_transactions[DATE]).dt.week
+	daily_transactions[PERIOD_W] = daily_transactions[DATE].dt.week
 	return daily_transactions
 
 def _get_year_transactions(week_transactions):
@@ -42,7 +42,7 @@ def _get_transactions(year_transactions):
 
 def _merge_transactions_with_products(agg_transactions, products):
 	"Merge transaction with product on product_id"
-	return agg_transactions.merge(products, on= PRODUCT_ID).drop([PRODUCT_NAME, COLOR], axis=1)
+	return agg_transactions.merge(products, on=PRODUCT_ID).drop([PRODUCT_NAME, COLOR], axis=1)
 	
 
 def build_dataset():
@@ -60,9 +60,13 @@ def build_dataset():
 	agg_transaction = _get_transactions(year_tx)
 	# merge aggregation transaction with product
 	dataset_merge = _merge_transactions_with_products(agg_transaction, catalog['products'])
-    # Update column DATE 
+    # Update column DATE
+	#print(dataset_merge) 
+	data = dataset_merge[PERIOD_W].astype(str) + dataset_merge[PERIOD_Y].astype(str)
+
 	dataset_merge[DATE] = pd.to_datetime(dataset_merge[PERIOD_W].astype(str)+
-	                dataset_merge[PERIOD_Y].astype(str).add('-1'),format = "%W%Y-%w")
+					dataset_merge[PERIOD_Y].astype(str).add('-1'), format = "%W%Y-%w")
+
 	# drop supplier
 	dataset = dataset_merge.drop('supplier', axis=1)
 

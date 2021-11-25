@@ -10,62 +10,60 @@ from src.constants import (
     PERIOD_W,
     PERIOD_Y,
     PERIOD_Q,
+    LAG,
     NB_WEEK
 
 )
 
 def build_feature_set(data):
 
-
     # create column of lag_target
-    data_with_lag_column = _lag_traget(data)
+    for lag in LAG:
+        data = _lag_traget(data, lag)
 
-    # create column of rolling mean
-    data_with_rollingmean_column = _rolling_mean(data_with_lag_column)
-
-    # create column of feature sin, cos
-    data_with_sincos_transformation = _sin_cos_transformation(data_with_rollingmean_column)
-
-    return data_with_sincos_transformation
-
-def _lag_traget(data):
-
-    """ Add rolling mean column """
-
-    data[f'lag_target_1W'] = data.groupby('product_id')['nb_sold_pieces'] \
-    .transform(lambda x:x.shift(1))
-    data[f'lag_target_1W'] = data[f'lag_target_1W'].fillna(method='bfill')
-    data[f'lag_target_2W'] = data.groupby('product_id')['nb_sold_pieces'] \
-        .transform(lambda x:x.shift(2)).fillna(method='bfill')
-    lag=3
-    data[f'lag_target_{lag}W'] = data.groupby('product_id')['nb_sold_pieces'].shift(lag)
-    data[f'lag_target_{lag}W'] = data[f'lag_target_{lag}W'].fillna(method='bfill')
-    lag=4
-    data[f'lag_target_{lag}W'] = data.groupby('product_id')['nb_sold_pieces'].shift(lag)
-    data[f'lag_target_{lag}W'] = data[f'lag_target_{lag}W'].fillna(method='bfill')
-    lag=5
-    data[f'lag_target_{lag}W'] = (data.groupby('product_id')['nb_sold_pieces']
-        .transform(lambda x: x.shift(lag)).fillna(method='bfill'))
-    data[f'lag_target_{lag}W'] = data[f'lag_target_{lag}W'].fillna(method='bfill')
+    # create column of rolling column
+    data = _rolling_mean_3W(data)
+    data = _rolling_mean_4W(data)
+    data = _rolling_mean_5W(data)
+    
+    # create column of feature sin 
+    data = _sin_transformation(data)
+ 
+    # create column of feature sin 
+    data = _cos_transformation(data)
     
     return data
 
-def _rolling_mean(data):
+def _lag_traget(data, lag):
 
-    """ Add rolling mean column """
+    data[f'lag_target_{lag}W'] = (data.groupby('product_id')['nb_sold_pieces'] \
+            .transform(lambda x:x.shift(lag))).fillna(method='bfill')
+    
+    return data
 
+
+def _rolling_mean_3W(data):
     data[f'rolling_mean_3W'] = np.mean(data[['lag_target_1W', 'lag_target_2W', 'lag_target_3W']], axis=1)
-    data[f'rolling_mean_4W'] = np.mean(data[['lag_target_1W', 'lag_target_2W', 'lag_target_3W', 'lag_target_4W']],
-                              axis=1)
-    data[f'rolling_mean_5W'] = np.mean(data[['lag_target_1W', 'lag_target_2W', 'lag_target_3W', 'lag_target_4W', 'lag_target_5W']], axis=1)
-
     return data
 
-def _sin_cos_transformation(data):
 
-    """ Add rolling mean column """
-    
+def _rolling_mean_4W(data):
+    data[f'rolling_mean_4W'] = np.mean(data[['lag_target_1W', 'lag_target_2W', 'lag_target_3W', 
+                                'lag_target_4W']], axis=1)
+    return data
+
+
+def _rolling_mean_5W(data):
+    data[f'rolling_mean_5W'] = np.mean(data[['lag_target_1W', 'lag_target_2W', 'lag_target_3W',
+                              'lag_target_4W', 'lag_target_5W']], axis=1)
+    return data
+
+
+def _sin_transformation(data):
     data['sin_week'] = np.sin((data[PERIOD_W]-1) * np.pi *2 / (52+71 / 400))
-    data['cos_week'] = np.cos((data[PERIOD_W]-1) * 2*np.pi /(52+(71 / 400)))
+    return data
 
+
+def _cos_transformation(data):
+    data['cos_week'] = np.cos((data[PERIOD_W]-1) * 2*np.pi /(52+(71 / 400)))
     return data
