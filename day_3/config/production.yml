@@ -1,0 +1,4 @@
+model:
+  name: 'RandomForest'
+  params:
+    n_estimators: 300

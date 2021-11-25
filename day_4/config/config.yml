@@ -1,0 +1,13 @@
+# {{ project root }}/config/config.yml
+target: 'nb_sold_pieces'
+date_col: 'period'
+test_cutoff: '06-02-2018'
+features:
+  lags:
+    - 1
+    - 2
+    - 3
+  windows:
+    - 3
+    - 4
+    - 5
