@@ -79,22 +79,28 @@ def _cos_transformation(data):
 
 @registry.register(name='product_id')
 def product_id(data):
-    # TODO: return the corresponding pd.Series
     return data[PRODUCT_ID]
 
 @registry.register(name='period')
 def period(data):
-    # TODO: return the corresponding pd.Series
     return data[PERIOD]
 
 @registry.register(name='week', depends=['period'])
-def week(_, period):  # dependency here!
-    # TODO: return the corresponding pd.Series
+def week(_, period):  
     period[PERIOD_W] = pd.to_datetime(period).dt.week
     return period
 
 @registry.register(name='year', depends=['period'])
-def year(_, period):  # and another dependency
-    # TODO: return the corresponding pd.Series
+def year(_, period): 
     period[PERIOD_W] = pd.to_datetime(period).dt.year
     return period
+    
+
+@registry.register(resources=['historical'])
+def lagged_target_1W(data, historical):
+    return pd.merge(
+        data, 
+        historical[[PERIOD, PRODUCT_ID, LAG_TARGET_FEATURE.format(lag=1)]],
+        on=[PERIOD, PRODUCT_ID],
+        how='left'
+    )[LAG_TARGET_FEATURE.format(lag=1)]

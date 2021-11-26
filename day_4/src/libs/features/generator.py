@@ -1,51 +1,44 @@
 # src/libs/features/generator.py
+import logging
+from types import GeneratorType
+
 import pandas as pd
 
 from src.libs.features.utils import chain_from_iterables
 
+logger = logging.getLogger(__name__)
+
+_TYPES_TO_UNPACK = (tuple, list, GeneratorType)
+
 
 class FeaturesGenerator:
 
-    def __init__(self, registry, features=None, resources=None):
-        self.registry = registry
-        # Note: our naming is a bit confusing... There is room
-        # for improvements... but later.
-
+    def __init__(self, registry, features=None):
+        self._registry = registry
         self.features = features or list(registry.registry.keys())
-        self.resources = resources or []
         self._state = {}
-        # TODO 0. we miss something to keep track of the execution...
-        #         Add it!
 
     def transform(self, data):
-
-        for feature_name in self.registry:
-
+        for feature_name in self._registry:
             logger.debug(f"Generating feature '{feature_name}'...")
 
-            record = self.registry.get(feature_name)
+            record = self._registry.get(feature_name)
 
-            deps = self.registry.get_feature_dependencies(record.name)
+            deps = self._registry.get_dependencies_for(record.name)
 
-            # unpack data from deps output. You're welcome!
-            upstream_data = chain_from_iterables(
+            upstream_data = self._chain_from_iterables(
                 self._state[d] for d in deps if d
             )
-
-            # TODO 2. run the transform process
-            # on the feature, and fetch its output.
-            output =  record.func(chain_from_iterables(
+            output = record.func(*self._chain_from_iterables(
                 (data, upstream_data))
             )
-           
-            # TODO 3. store the output in instance's state
-            # It must be accessible by feature name.
             self._state[record.name] = output
 
-        logger.debug("Feature generation done!")
-        # TODO 4. return a pandas DataFrame whose columns are
-        # the feature names, and values are the output of the
-        # `transform` processing.
+        return pd.DataFrame({
+            feature_name: self._state[feature_name]
+            for feature_name in self.features
+        })
 
-        return pd.DataFrame({feature_name: self._state[feature_name]
-                            for feature_name in self.features})
+    @staticmethod
+    def _chain_from_iterables(iterables):
+        return chain_from_iterables(iterables, _TYPES_TO_UNPACK)

@@ -1,5 +1,7 @@
 
 # src/libs/features/registry.py
+import networkx as nx
+
 from dataclasses import dataclass
 from typing import Callable, List
 
@@ -43,7 +45,7 @@ class FeatureRegistry:  # or FeatureStore... as you prefer!
             raise FeatureNotFoundError 
         return feature_data
     
-    def register(self, name, depends=None, resources=None):
+    def register(self, name, *, depends=None, resources=None):
 
         depends = depends or []
         resources = resources or []
