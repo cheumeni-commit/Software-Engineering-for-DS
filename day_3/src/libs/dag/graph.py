@@ -13,7 +13,7 @@ class Graph:
         self.edges = defaultdict(list)
 
     def add_edge(self, source, target):
-        self.edges[source].append(target)
+        self.edges[target].append(source)
 
     def get_node_dependencies(self, node):
         return self.edges.get(node, [])

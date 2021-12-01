@@ -57,16 +57,16 @@ def build_dataset():
 	
 	pipeline = Graph()
 
-	pipeline.add_edge(_compute_daily_transactions, load_transactions)
-	pipeline.add_edge(_compute_weekly_transactions, _compute_daily_transactions)
+	pipeline.add_edge(load_transactions, _compute_daily_transactions)
+	pipeline.add_edge(_compute_daily_transactions, _compute_weekly_transactions)
 
-	pipeline.add_edge(_get_year_transactions, _compute_weekly_transactions)
-	pipeline.add_edge(_get_transactions, _get_year_transactions)
+	pipeline.add_edge(_compute_weekly_transactions, _get_year_transactions)
+	pipeline.add_edge(_get_year_transactions, _get_transactions)
 
-	pipeline.add_edge(_merge_transactions_with_products, load_products)
-	pipeline.add_edge(_merge_transactions_with_products, _get_transactions)
+	pipeline.add_edge(load_products, _merge_transactions_with_products)
+	pipeline.add_edge(_get_transactions, _merge_transactions_with_products)
     
-	pipeline.add_edge(_save_dataset, _merge_transactions_with_products)
+	pipeline.add_edge(_merge_transactions_with_products, _save_dataset)
 
 	return pipeline 
 
