@@ -1,12 +1,11 @@
 # src/libs/features/utils.py
 from types import GeneratorType
 
-TYPES_TO_UNPACK = (tuple, list, GeneratorType)
 
-def chain_from_iterables(iterables):
+def chain_from_iterables(iterables, unpacked_types=()):
     """Like itertools.chain.from_iterable, but avoid unpacking np arrays."""
     for it in iterables:
-        if isinstance(it, TYPES_TO_UNPACK):
+        if isinstance(it, unpacked_types):
             yield from it
         else:
             yield it

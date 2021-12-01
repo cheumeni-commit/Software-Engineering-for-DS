@@ -28,6 +28,9 @@ class FeatureRegistry:  # or FeatureStore... as you prefer!
     @property
     def adjacency(self):
         return {k: v.depends for k, v in self._registry.items()}
+    
+    def keys(self):
+        return self._registry.keys()
 
     def get_feature_dependencies(self, name):
         deps = self.adjacency.get(name)
@@ -36,9 +39,9 @@ class FeatureRegistry:  # or FeatureStore... as you prefer!
         return deps
 
     def topo_sorted(self):
-        nx_graph = nx.DiGraph(adjacency).reverse()
+        nx_graph = nx.DiGraph(self.adjacency).reverse()
         return nx.algorithms.dag.topological_sort(nx_graph)
-
+    
     def get(self, name):
         feature_data = self.registry[name]
         if feature_data is None:
@@ -63,3 +66,6 @@ class FeatureRegistry:  # or FeatureStore... as you prefer!
             self._registry[name] = record
 
         return do_register
+
+    def __iter__(self):
+        return self.topo_sorted()

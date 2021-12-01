@@ -24,7 +24,7 @@ class FeaturesGenerator:
 
             record = self._registry.get(feature_name)
 
-            deps = self._registry.get_dependencies_for(record.name)
+            deps = self._registry.get_feature_dependencies(record.name)
 
             upstream_data = self._chain_from_iterables(
                 self._state[d] for d in deps if d

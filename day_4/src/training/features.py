@@ -96,11 +96,11 @@ def year(_, period):
     return period
     
 
-@registry.register(resources=['historical'])
-def lagged_target_1W(data, historical):
-    return pd.merge(
-        data, 
-        historical[[PERIOD, PRODUCT_ID, LAG_TARGET_FEATURE.format(lag=1)]],
-        on=[PERIOD, PRODUCT_ID],
-        how='left'
-    )[LAG_TARGET_FEATURE.format(lag=1)]
+#@registry.register(resources=['historical'])
+#def lagged_target_1W(data, historical):
+    #return pd.merge(
+        #data, 
+        #historical[[PERIOD, PRODUCT_ID, LAG_TARGET_FEATURE.format(lag=1)]],
+        #on=[PERIOD, PRODUCT_ID],
+        #how='left'
+    #)[LAG_TARGET_FEATURE.format(lag=1)]

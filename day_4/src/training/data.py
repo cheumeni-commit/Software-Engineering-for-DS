@@ -21,6 +21,7 @@ from src.constants import (
 	PERIOD_Y,
 	LAG,
 	HISTORICAL,
+	PERIOD,
 	DATASET
 )
 
@@ -55,7 +56,7 @@ def _merge_transactions_with_products(agg_transactions, products):
 
 def _add_date_and_delete_supplier(dataset):
 	# Add date column
-    dataset[DATE] = pd.to_datetime(dataset[PERIOD_W].astype(str)+
+    dataset[PERIOD] = pd.to_datetime(dataset[PERIOD_W].astype(str)+
 	                dataset[PERIOD_Y].astype(str).add('-1'),format = "%W%Y-%w")
 	# drop supplier
     dataset = dataset.drop('supplier', axis=1)
