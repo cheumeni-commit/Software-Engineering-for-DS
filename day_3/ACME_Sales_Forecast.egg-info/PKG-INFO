@@ -1,0 +1,14 @@
+Metadata-Version: 1.0
+Name: ACME-Sales-Forecast
+Version: 0.1
+Summary: Machine Learning for sales forecasting at ACME Inc.
+Home-page: UNKNOWN
+Author: YOUR NAME
+Author-email: YOUR EMAIL
+License: UNKNOWN
+Description: # ACME - Machine Learning for retail sales forecasting
+        
+        A Machine Learning project to predict future sales at ACME Inc.
+        
+        This project uses Python > 3.7
+Platform: UNKNOWN

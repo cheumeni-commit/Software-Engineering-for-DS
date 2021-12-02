@@ -1,0 +1,26 @@
+[
+    {
+      "product_id": 1,
+      "period": "2019-06-02",
+      "gross_price": 31.3,
+      "supplier": null
+    },
+    {
+      "product_id": 1,
+      "period": "2019-13-02",
+      "gross_price": 13.68,
+      "supplier": "John"
+    },
+    {
+      "product_id": 2,
+      "period": "2019-13-02",
+      "gross_price": 13.68,
+      "supplier": "John"
+    },
+    {
+      "product_id": 2,
+      "period": "2019-13-02",
+      "gross_price": 13.68,
+      "supplier": "John"
+    }
+  ]
